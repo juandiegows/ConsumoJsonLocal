@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.consumojsonlocal.databinding.ItemUserBinding
+import com.example.consumojsonlocal.helper.toBitmap
 import com.example.consumojsonlocal.models.User
 
 class UserAdapter(var list : List<User>) : RecyclerView.Adapter<UserAdapter.UserHolder>() {
@@ -20,6 +21,7 @@ class UserAdapter(var list : List<User>) : RecyclerView.Adapter<UserAdapter.User
                if(Description != null){
                    txtDesc.text = Description
                }
+               imgPhoto.setImageBitmap(Photo.toBitmap())
            }
        }
     }

@@ -86,19 +86,21 @@ class MainActivity : AppCompatActivity() {
         intent.type = "*/*" /// Esto permite seleccionar cualquier tipo de archivo
         openFileLauncher.launch(intent)
     }
-fun connsumoAPIRetrofit(){
-    CustomRetrofit.service.getUsers().enqueue(object : Callback<List<User>>{
-        override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-            if(response.isSuccessful){
-                binding.spinnner.adapter = UserAdapter(response.body()!!)
-            }
-        }
 
-        override fun onFailure(call: Call<List<User>>, t: Throwable) {
-            t.printStackTrace()
-        }
-    })
-}
+    fun connsumoAPIRetrofit() {
+        CustomRetrofit.service.getUsers().enqueue(object : Callback<List<User>> {
+            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+                if (response.isSuccessful) {
+                    binding.spinnner.adapter = UserAdapter(response.body()!!)
+                }
+            }
+
+            override fun onFailure(call: Call<List<User>>, t: Throwable) {
+                t.printStackTrace()
+            }
+        })
+    }
+
     fun consumoRaw(): List<User> {
         val res = resources
 
@@ -106,14 +108,7 @@ fun connsumoAPIRetrofit(){
         val inputStream = this.javaClass.classLoader.getResourceAsStream(filePath)
         try {
             val reader = BufferedReader(InputStreamReader(inputStream))
-            val jsonString = StringBuilder()
-            var line: String?
-            while (reader.readLine().also { line = it } != null) {
-                jsonString.append(line)
-            }
-            val json = jsonString.toString()
-
-
+            val json =      reader.readText()
             val listType: Type? = object : TypeToken<List<User>>() {}.type
             return Gson().fromJson(json, listType)
 

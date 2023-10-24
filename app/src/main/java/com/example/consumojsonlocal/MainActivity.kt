@@ -2,6 +2,8 @@ package com.example.consumojsonlocal
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.consumojsonlocal.adapter.UserAdapter
 import com.example.consumojsonlocal.databinding.ActivityMainBinding
 import com.example.consumojsonlocal.models.User
 import com.google.gson.Gson
@@ -18,7 +20,13 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        binding.txtTexto.text = consumoRaw().size.toString()
+binding.apply {
+    spinnner.layoutManager = LinearLayoutManager(this@MainActivity)
+    btnraw.setOnClickListener {
+        spinnner.adapter = UserAdapter(consumoRaw())
+    }
+}
+
     }
 
     fun consumoRaw(): List<User> {

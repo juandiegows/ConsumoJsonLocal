@@ -8,11 +8,15 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.consumojsonlocal.API.CustomRetrofit
 import com.example.consumojsonlocal.adapter.UserAdapter
 import com.example.consumojsonlocal.databinding.ActivityMainBinding
 import com.example.consumojsonlocal.models.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileInputStream
@@ -28,19 +32,24 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-binding.apply {
-    spinnner.layoutManager = LinearLayoutManager(this@MainActivity)
-    btnraw.setOnClickListener {
-        spinnner.adapter = UserAdapter(consumoRaw())
-    }
-    btnAlmacenamiento.setOnClickListener {
-        consumoAlmacenamiento()
-    }
-}
+        binding.apply {
+            spinnner.layoutManager = LinearLayoutManager(this@MainActivity)
+            btnraw.setOnClickListener {
+                spinnner.adapter = UserAdapter(consumoRaw())
+            }
+            btnAlmacenamiento.setOnClickListener {
+                consumoAlmacenamiento()
+            }
+            btnAPI.setOnClickListener {
+                connsumoAPIRetrofit()
+            }
+        }
 
     }
-    var openFileLauncher: ActivityResultLauncher<Intent>  = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()) { result ->
+
+    var openFileLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
             val data: Intent? = result.data
             val uri: Uri? = data?.data
@@ -57,7 +66,7 @@ binding.apply {
                 val json = jsonString.toString()
 
                 val listType: Type? = object : TypeToken<List<User>>() {}.type
-                var list : List<User> = Gson().fromJson(json, listType)
+                var list: List<User> = Gson().fromJson(json, listType)
                 binding.spinnner.adapter = UserAdapter(list)
                 // Ahora 'json' contiene el contenido del archivo JSON.
             } catch (e: IOException) {
@@ -69,6 +78,7 @@ binding.apply {
             // Por ejemplo, puedes abrirlo en un visor o procesarlo en tu aplicación
         }
     }
+
     fun consumoAlmacenamiento() {
 
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT)
@@ -76,6 +86,19 @@ binding.apply {
         intent.type = "*/*" /// Esto permite seleccionar cualquier tipo de archivo
         openFileLauncher.launch(intent)
     }
+fun connsumoAPIRetrofit(){
+    CustomRetrofit.service.getUsers().enqueue(object : Callback<List<User>>{
+        override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
+            if(response.isSuccessful){
+                binding.spinnner.adapter = UserAdapter(response.body()!!)
+            }
+        }
+
+        override fun onFailure(call: Call<List<User>>, t: Throwable) {
+            t.printStackTrace()
+        }
+    })
+}
     fun consumoRaw(): List<User> {
         val res = resources
 
@@ -91,8 +114,8 @@ binding.apply {
             val json = jsonString.toString()
 
 
-             val listType: Type? = object : TypeToken<List<User>>() {}.type
-             return  Gson().fromJson(json, listType)
+            val listType: Type? = object : TypeToken<List<User>>() {}.type
+            return Gson().fromJson(json, listType)
 
         } catch (e: IOException) {
             // Manejar excepciones aquí

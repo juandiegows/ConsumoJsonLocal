@@ -21,7 +21,13 @@ class UserAdapter(var list : List<User>) : RecyclerView.Adapter<UserAdapter.User
                if(Description != null){
                    txtDesc.text = Description
                }
-               imgPhoto.setImageBitmap(Photo.toBitmap())
+
+               if( Photo  != null){
+                   imgPhoto.setImageBitmap( Photo.toBitmap())
+               }else {
+                   imgPhoto.setImageBitmap(null)
+               }
+
            }
        }
     }

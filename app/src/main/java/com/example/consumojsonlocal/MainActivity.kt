@@ -56,14 +56,7 @@ class MainActivity : AppCompatActivity() {
             try {
                 val inputStream: InputStream? = contentResolver.openInputStream(uri!!)
                 val reader = BufferedReader(InputStreamReader(inputStream))
-                val jsonString = StringBuilder()
-                var line: String?
-
-                while (reader.readLine().also { line = it } != null) {
-                    jsonString.append(line)
-                }
-
-                val json = jsonString.toString()
+                val json =reader.readText()
 
                 val listType: Type? = object : TypeToken<List<User>>() {}.type
                 var list: List<User> = Gson().fromJson(json, listType)

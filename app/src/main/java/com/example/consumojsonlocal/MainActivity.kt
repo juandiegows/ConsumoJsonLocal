@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.consumojsonlocal.API.CustomRetrofit
 import com.example.consumojsonlocal.adapter.UserAdapter
 import com.example.consumojsonlocal.databinding.ActivityMainBinding
+import com.example.consumojsonlocal.helper.toBitmap
 import com.example.consumojsonlocal.models.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -18,8 +19,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.BufferedReader
-import java.io.File
-import java.io.FileInputStream
 import java.io.IOException
 import java.io.InputStream
 import java.io.InputStreamReader
@@ -32,10 +31,18 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
         binding.apply {
             spinnner.layoutManager = LinearLayoutManager(this@MainActivity)
             btnraw.setOnClickListener {
-                spinnner.adapter = UserAdapter(consumoRaw())
+                spinnner.adapter = UserAdapter(consumoRaw()){ user ->
+                    if (user.Photo != null) {
+                        binding.imgTool.setImageBitmap(user.Photo.toBitmap())
+                    }
+                    binding.txtNameTool.text = "${user.FirstName} ${user.LastName}"
+                }
+
+
             }
             btnAlmacenamiento.setOnClickListener {
                 consumoAlmacenamiento()
@@ -56,19 +63,25 @@ class MainActivity : AppCompatActivity() {
             try {
                 val inputStream: InputStream? = contentResolver.openInputStream(uri!!)
                 val reader = BufferedReader(InputStreamReader(inputStream))
-                val json =reader.readText()
+                val json = reader.readText()
 
                 val listType: Type? = object : TypeToken<List<User>>() {}.type
                 var list: List<User> = Gson().fromJson(json, listType)
-                binding.spinnner.adapter = UserAdapter(list)
-                // Ahora 'json' contiene el contenido del archivo JSON.
+                binding.spinnner.adapter = UserAdapter(list){ user ->
+                    if (user.Photo != null) {
+                        binding.imgTool.setImageBitmap(user.Photo.toBitmap())
+                    }
+                    binding.txtNameTool.text = "${user.FirstName} ${user.LastName}"
+                }
+
+
             } catch (e: IOException) {
-                // Manejar excepciones aquí
+
+
                 e.printStackTrace()
+
             }
-            // Uri contiene la ubicación del archivo seleccionado
-            // Puedes trabajar con el archivo a través de la Uri aquí
-            // Por ejemplo, puedes abrirlo en un visor o procesarlo en tu aplicación
+
         }
     }
 
@@ -84,7 +97,12 @@ class MainActivity : AppCompatActivity() {
         CustomRetrofit.service.getUsers().enqueue(object : Callback<List<User>> {
             override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
                 if (response.isSuccessful) {
-                    binding.spinnner.adapter = UserAdapter(response.body()!!)
+                    binding.spinnner.adapter = UserAdapter(response.body()!!) { user ->
+                        if (user.Photo != null) {
+                            binding.imgTool.setImageBitmap(user.Photo.toBitmap())
+                        }
+                        binding.txtNameTool.text = "${user.FirstName} ${user.LastName}"
+                    }
                 }
             }
 
@@ -101,7 +119,7 @@ class MainActivity : AppCompatActivity() {
         val inputStream = this.javaClass.classLoader.getResourceAsStream(filePath)
         try {
             val reader = BufferedReader(InputStreamReader(inputStream))
-            val json =      reader.readText()
+            val json = reader.readText()
             val listType: Type? = object : TypeToken<List<User>>() {}.type
             return Gson().fromJson(json, listType)
 

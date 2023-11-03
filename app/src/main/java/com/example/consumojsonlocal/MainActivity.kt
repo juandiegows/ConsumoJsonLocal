@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
@@ -15,6 +16,8 @@ import com.example.consumojsonlocal.helper.toBitmap
 import com.example.consumojsonlocal.models.User
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,7 +34,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
+var text = "hola".substring(0, 3)
+     var t =    JSONArray(consumoRaw()).toString()
+       var data = JSONArray(t)
+        data.getJSONObject(0).get
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
         binding.apply {
             spinnner.layoutManager = LinearLayoutManager(this@MainActivity)
             btnraw.setOnClickListener {

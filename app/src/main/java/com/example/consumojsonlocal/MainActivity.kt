@@ -34,13 +34,14 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-var text = "hola".substring(0, 3)
-     var t =    JSONArray(consumoRaw()).toString()
-       var data = JSONArray(t)
-        data.getJSONObject(0).get
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+
+
+
         binding.apply {
             spinnner.layoutManager = LinearLayoutManager(this@MainActivity)
+            btnAbrirJsonActivity.setOnClickListener {
+                startActivity(Intent(this@MainActivity, JsonActivity::class.java))
+            }
             btnraw.setOnClickListener {
                 spinnner.adapter = UserAdapter(consumoRaw()){ user ->
                     if (user.Photo != null) {
@@ -60,6 +61,7 @@ var text = "hola".substring(0, 3)
         }
 
     }
+
 
     var openFileLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
